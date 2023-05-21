@@ -38,16 +38,13 @@ char    *ft_substr(char *s, int start, int len)
         c[i] = '\0';
         return (c);
     }
-	// printf("\n\n\ni == %d ----- len == %d", i, len);
-    while (s[start] && i <= len)
+    while (s[start] && i < len)
     {
-		// printf("s[start] == %c\n", s[start]);
         c[i] = s[start];
-        i++;
         start++;
+        i++;
     }
     c[i] = '\0';
-	// ft_putstr(c);
     return (c);
 }
 

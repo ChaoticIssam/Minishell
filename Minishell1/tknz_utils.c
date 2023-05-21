@@ -1,9 +1,6 @@
 #include "minishell.h"
 
-int	ft_isspace(char c)
-{
-	return (c == 32 || c == '\t' || c == '\v');
-}
+ç
 
 int	ft_isspecial(char c)
 {
@@ -11,4 +8,3 @@ int	ft_isspecial(char c)
 		|| c == '\'' || c == '\"' || c == '\0' || c == '$');
 }
 
-int	ft_ischar(void)
