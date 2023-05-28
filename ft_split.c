@@ -28,6 +28,8 @@ char    *ft_substr(char *s, int start, int len)
 
     i = 0;
     y = ft_strlen(s);
+	if (len == 0)
+		return (0);
     if (len > y - start)
         len = y - start;
     c = malloc (sizeof(char) * (len + 1));
