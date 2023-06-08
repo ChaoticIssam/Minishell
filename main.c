@@ -7,37 +7,39 @@ int	main(void)
 {
 	char	*line;
 	char	*tmp;
-	// int		i;
-
-	// char *arc = NULL;
-	// t_commandes	*comm;
-	// char *commande = NULL;
-	// i = 0;
-	// int	*arr;
+	char	**commande = NULL;
+	t_commandes	*m;
+	int		i;
+	i = 0;
+	m = malloc(sizeof(t_commandes));
 	// while (1)
 	// {
 		line = readline("Minishell$ ");
 		if (line == NULL || !ft_strncmp(line, "exit"))
 			exit(0);
 		tmp = toknz_list(line);
-		// while (i < count_token(tmp))
+		commande = return_it(tmp,line);
+		m->s = commande;
+		// printf("last == %d, first == %d\n", sec_q(tmp), frst_q(tmp));
+		// while (i < ft_strlen(tmp))
 		// {
-			return_it(tmp, line);
-			// ft_putstr(return_it(tmp, line)[i]);
-			printf("\n");
-			// i++;
+		// 	if (tmp[i] == '5')
+		// 	{
+		// 		printf("*******>%s\n", quotes_quotes(line, tmp, i));
+		// 		i = find_quotes_pair(tmp, i);
+		// 	}
+		// // 	ft_putstr(m->s[i]);
+		// // 	// ft_putstr(m->s[i]);
+		// 	i++;
 		// }
+		i = 0;
+		while (i < count_token(tmp))
+		{
+			// return_it(tmp, line);
+			ft_putstr(m->s[i]);
+			printf("\n");
+			i++;
+		}
 		// i = 0;
 	// }
-}
-void	print_stuff(int *start)
-{
-	int	i;
-
-	i = 0;
-	while (start[i])
-	{
-		printf("%d", start[i]);
-		i++;
-	}
 }

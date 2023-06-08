@@ -47,6 +47,7 @@ char    *ft_substr(char *s, int start, int len)
         i++;
     }
     c[i] = '\0';
+	
     return (c);
 }
 

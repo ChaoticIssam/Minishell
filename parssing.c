@@ -54,19 +54,19 @@ int	count_token(char *list)
 			lock = 0;
 			tmp = list[i];
 		}
-		else if (list[i] == '5' && find_quotes_pair(list, i + 1))
-		{
-			i++;
-			while (list[i])
-			{
-				if (list[i] == '5')
-				{
-					count++;
-					break ;
-				}
-				i++;
-			}
-		}
+		// else if (list[i] == '5' && find_quotes_pair(list, i + 1))
+		// {
+		// 	i++;
+		// 	while (list[i])
+		// 	{
+		// 		if (list[i] == '5')
+		// 		{
+		// 			count++;
+		// 			break ;
+		// 		}
+		// 		i++;
+		// 	}
+		// }
 		i++;
 	}
 	return (count);
@@ -97,28 +97,17 @@ char	**return_it(char *list, char *str)
 	{
 		if (list[i] == '5')
 		{
-			commande[x] = in_quotes(list, str, start1);
-			printf("[1]commande==<%s>|| x == %d\n\n", commande[x], x);
-			i = i + ft_strlen(commande[x]) - 1;
-			printf("[1-2]i ==> {-%d-}\n", i);
+			commande[x] = quotes_quotes(str, list, i);
+			i = find_quotes_pair(list, i);
 			start = i;
 			x++;
 		}
 		if (((list[i] != tmp) || !list[i + 1]))
 		{
-			if (!list[i + 1])
-				end = i;
-			else
-				end = i - 1;
+			end = i;
 			start1 = i;
 			lock1 = 0;
 			lock = 1;
-		}
-		if (list[i] == '1' && list[i + 1] == '5')
-		{
-			printf("[2]->i == %d\n", i);
-			lock1 = 1;
-			lock = 0;
 		}
 		if (list[i] == '1' && list[i + 1] == '6')
 		{
@@ -135,11 +124,9 @@ char	**return_it(char *list, char *str)
 			lock1 = 1;
 			tmp = list[i];
 		}
-		if (!lock1 && list[i] != '5' && str[start] != '"')
+		if (!lock1 && list[i] != '5' && str[start] != '"' && end > start)
 		{
-			// printf("[3-1] ---> start == %d || end == %d\n", start, end);
 			commande[x] = ft_substr(str, start, end - start + 1);
-			printf("[3]commande==<%s>|| x == %d\n\n", commande[x], x);
 			x++;
 		}
 		i++;
@@ -152,7 +139,7 @@ int	find_quotes_pair(char *tokenz, int i)
 {
 	while (tokenz[i])
 	{
-		if (tokenz[i] == '5')
+		if (tokenz[i] == '2' || tokenz[i + 1] == 0)
 			return (i);
 		i++;
 	}
@@ -174,7 +161,6 @@ char	*in_quotes(char *tokenz, char *str, int i)
 	}
 	else
 		return (0);
-	// printf("i == %d || c == %c\n\n", i, tokenz[i]);
 	++i;
 	while (tokenz[i] != '2' || tokenz[i])
 	{
@@ -193,4 +179,67 @@ char	*in_quotes(char *tokenz, char *str, int i)
 		i++;
 	}
 	return (ptr);
+}
+
+int	sec_q(char *tknz, int start)
+{
+	while (tknz[start] != '5')
+		start++;
+	start++;
+	while (tknz[start])
+	{
+		if (tknz[start] == '5')
+		{
+			if (tknz[start + 1] == '1')
+			{
+				start++;
+				while (tknz[start] == '1')
+					start++;
+			}
+			return(start);
+		}
+		start++;
+	}
+	return (0);
+}
+
+int	frst_q(char *tknz, int start)
+{
+	int	i;
+
+	i = sec_q(tknz, start);
+	while(i >= 0)
+	{
+		if (tknz[i] == '2' && i < sec_q(tknz, start))
+			return (i);
+		i--;
+	}
+	return (0);
+}
+
+char *quotes_quotes(char *str, char *tknz, int start)
+{
+	int	i;
+	int	j;
+	char	*ptr;
+
+	ptr = malloc(sizeof(char) * sec_q(tknz, start));
+	i = frst_q(tknz, start);
+	j = 0;
+	i++;
+	while (i <= sec_q(tknz, start))
+	{
+		if (tknz[i] == '5')
+			i++;
+		if (tknz[i] == '2' || tknz[i] == '\0')
+		{
+			ptr[j] = '\0';
+			return(ptr);
+		}
+		else if (tknz[i] == '1')
+			ptr[j] = str[i];
+		j++;
+		i++;
+	}
+	return (0);
 }

@@ -34,6 +34,10 @@ int						*return_string(t_node *list, char *str);
 char					*ft_strjoin(char *s1, char *s2);
 void					ft_putstr(char *str);
 int						count_token(char *list);
+void					fill_strct(char **commande);
+int						sec_q(char *tknz, int start);
+int						frst_q(char *tknz, int start);
+char					*quotes_quotes(char *str, char *tknz, int start);
 /* tmp */ void print_stuff(int *start);
 /*tmp*/ void print_stuff2(t_commandes *start);
 
