@@ -117,14 +117,20 @@ char	**return_it(char *list, char *str)
 			tmp = list[i];
 		}
 		if ((ft_isspecial(list[i]) || list[i] == '1') && list[i] != '5' && lock
-			&& list[i + 1])
+		&& list[i + 1])
 		{
+			
 			start = i;
 			lock = 0;
 			lock1 = 1;
 			tmp = list[i];
 		}
-		if (!lock1 && list[i] != '5' && str[start] != '"' && end > start)
+		if (list[i] == '1' && list[i - 1] == '2' && !list[i + 1])
+		{
+			commande[x] = &str[i];
+			x++;
+		}
+		if (!lock1 && list[i] != '5' && str[start] != '"' && end >= start)
 		{
 			commande[x] = ft_substr(str, start, end - start + 1);
 			x++;

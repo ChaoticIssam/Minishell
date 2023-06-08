@@ -12,8 +12,8 @@ int	main(void)
 	int		i;
 	i = 0;
 	m = malloc(sizeof(t_commandes));
-	// while (1)
-	// {
+	while (1)
+	{
 		line = readline("Minishell$ ");
 		if (line == NULL || !ft_strncmp(line, "exit"))
 			exit(0);
@@ -32,7 +32,7 @@ int	main(void)
 		// // 	// ft_putstr(m->s[i]);
 		// 	i++;
 		// }
-		i = 0;
+		// i = 0;
 		while (i < count_token(tmp))
 		{
 			// return_it(tmp, line);
@@ -40,6 +40,6 @@ int	main(void)
 			printf("\n");
 			i++;
 		}
-		// i = 0;
-	// }
+		i = 0;
+	}
 }
