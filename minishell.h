@@ -18,6 +18,14 @@ typedef struct s_commandes
 	struct s_commandes	*next;
 }						t_commandes;
 
+typedef struct s_env
+{
+	char				*var;
+	char				*path;
+	int					env_len;
+	struct s_env		*next;
+}						t_env;
+
 int						ft_strncmp(char *s1, char *s2);
 int						ft_strlen(char *str);
 t_node					*create_node(int arg);
@@ -38,6 +46,11 @@ void					fill_strct(char **commande);
 int						sec_q(char *tknz, int start);
 int						frst_q(char *tknz, int start);
 char					*quotes_quotes(char *str, char *tknz, int start);
+int						env_len(t_commandes *m);
+char					*fill_var(t_env *s, t_commandes *m, int i, int j);
+char					*get_path(char **env, int i);
+char					*fill_path(char **env, t_env *s);
+char					*var_gett(char **env, int i);
 /* tmp */ void print_stuff(int *start);
 /*tmp*/ void print_stuff2(t_commandes *start);
 

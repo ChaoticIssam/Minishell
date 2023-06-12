@@ -15,6 +15,8 @@ char	*toknz_list(char *str)
 	array = calloc(sizeof(char), ft_strlen(str) + 1); //**
 	while (str[i])
 	{
+		if (str[i] == '$')
+			array[i] = '7';
 		if (str[i] == '|')
 			array[i] = '6';
 		else if (str[i] == '"')
@@ -54,19 +56,6 @@ int	count_token(char *list)
 			lock = 0;
 			tmp = list[i];
 		}
-		// else if (list[i] == '5' && find_quotes_pair(list, i + 1))
-		// {
-		// 	i++;
-		// 	while (list[i])
-		// 	{
-		// 		if (list[i] == '5')
-		// 		{
-		// 			count++;
-		// 			break ;
-		// 		}
-		// 		i++;
-		// 	}
-		// }
 		i++;
 	}
 	return (count);
@@ -99,7 +88,7 @@ char	**return_it(char *list, char *str)
 		{
 			commande[x] = quotes_quotes(str, list, i);
 			i = find_quotes_pair(list, i);
-			start = i;
+			start = i + 1;
 			x++;
 		}
 		if (((list[i] != tmp) || !list[i + 1]))
@@ -117,9 +106,8 @@ char	**return_it(char *list, char *str)
 			tmp = list[i];
 		}
 		if ((ft_isspecial(list[i]) || list[i] == '1') && list[i] != '5' && lock
-		&& list[i + 1])
+			&& list[i + 1])
 		{
-			
 			start = i;
 			lock = 0;
 			lock1 = 1;
@@ -157,6 +145,7 @@ char	*in_quotes(char *tokenz, char *str, int i)
 	char	*ptr;
 	int		len;
 	int		j;
+
 	j = 0;
 	if (!tokenz || !str)
 		return (0);
@@ -202,7 +191,7 @@ int	sec_q(char *tknz, int start)
 				while (tknz[start] == '1')
 					start++;
 			}
-			return(start);
+			return (start);
 		}
 		start++;
 	}
@@ -214,7 +203,7 @@ int	frst_q(char *tknz, int start)
 	int	i;
 
 	i = sec_q(tknz, start);
-	while(i >= 0)
+	while (i >= 0)
 	{
 		if (tknz[i] == '2' && i < sec_q(tknz, start))
 			return (i);
@@ -223,10 +212,10 @@ int	frst_q(char *tknz, int start)
 	return (0);
 }
 
-char *quotes_quotes(char *str, char *tknz, int start)
+char	*quotes_quotes(char *str, char *tknz, int start)
 {
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 	char	*ptr;
 
 	ptr = malloc(sizeof(char) * sec_q(tknz, start));
@@ -240,11 +229,125 @@ char *quotes_quotes(char *str, char *tknz, int start)
 		if (tknz[i] == '2' || tknz[i] == '\0')
 		{
 			ptr[j] = '\0';
-			return(ptr);
+			return (ptr);
 		}
 		else if (tknz[i] == '1')
 			ptr[j] = str[i];
 		j++;
+		i++;
+	}
+	return (0);
+}
+
+int	env_len(t_commandes *m)
+{
+	int	i;
+	int	j;
+	int	count;
+
+	i = 0;
+	j = 0;
+	count = 0;
+	while (m->s[i])
+	{
+		if (m->s[i][j] == '$')
+		{
+			j++;
+			while (m->s[i][j] && m->s[i][j] != ' ')
+			{
+				count++;
+				j++;
+			}
+			if (m->s[i][j] == ' ' || !m->s[i][j])
+				return (count);
+		}
+		i++;
+	}
+	return (0);
+}
+
+char	*fill_var(t_env *s, t_commandes *m, int i, int j)
+{
+	char	*var;
+	int		x;
+
+	var = malloc(sizeof(char) * s->env_len + 1);
+	x = 0;
+	j++;
+	while (m->s[i][j] && m->s[i][j] != ' ')
+	{
+		var[x] = m->s[i][j];
+		j++;
+		x++;
+	}
+	var[x] = '\0';
+	return (var);
+}
+
+char	*var_gett(char **env, int i)
+{
+	int		j;
+	char	*envv;
+
+	envv = malloc(sizeof(char) * 100);
+	j = 0;
+	while (env[i][j])
+	{
+		if (env[i][j] == '=')
+			return (envv);
+		envv[j] = env[i][j];
+		j++;
+	}
+	return (0);
+}
+
+char	*get_path(char **env, int i)
+{
+	int		j;
+	int		x;
+	char	*envr;
+
+	envr = malloc(sizeof(char) * 100);
+	j = 0;
+	x = 0;
+	while (env[i][j])
+	{
+		if (env[i][j] == '=')
+		{
+			j++;
+			while (env[i][j])
+			{
+				envr[x] = env[i][j];
+				x++;
+				j++;
+			}
+			if (!env[i][j])
+				return (envr);
+		}
+		j++;
+	}
+	return (0);
+}
+
+char	*fill_path(char **env, t_env *s)
+{
+	int		i;
+	int		j;
+	char	*path;
+
+	i = 0;
+	j = 0;
+	path = malloc(sizeof(char) * 100);
+	while (env[i][j] && env[i][j] != '=')
+		j++;
+	j++;
+	while (i < 36)
+	{
+		if (!ft_strncmp(s->var, var_gett(env, i)))
+		{
+			path = get_path(env, i);
+			return (path);
+		}
 		i++;
 	}
 	return (0);
