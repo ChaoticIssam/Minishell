@@ -78,3 +78,40 @@ char	**ft_split(char *s, char c)
 	}
 	return (p[l] = NULL, p);
 }
+
+t_commandes	*ft_lstnew(void *content)
+{
+	t_commandes	*first;
+
+	first = malloc(sizeof(t_commandes));
+	if (!first)
+		return (0);
+	first->s = content;
+	first->next = NULL;
+	return (first);
+}
+
+t_commandes	*ft_lstlast(t_commandes *lst)
+{
+	while (lst != NULL)
+	{
+		if (lst->next == NULL)
+			return (lst);
+		lst = lst->next;
+	}
+	return (lst);
+}
+
+void	ft_lstadd_back(t_commandes **lst, t_commandes *new)
+{
+	t_commandes	*newlst;
+
+	newlst = *lst;
+	if (*lst)
+	{
+		newlst = ft_lstlast(newlst);
+		newlst->next = new;
+	}
+	else
+		*lst = new;
+}
