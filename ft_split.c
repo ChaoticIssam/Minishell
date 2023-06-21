@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/18 15:58:27 by iszitoun          #+#    #+#             */
+/*   Updated: 2023/06/21 14:58:31 by iszitoun         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	count_words(char *str, char c)
@@ -20,35 +32,34 @@ static void	free_all(char **str)
 	free(str);
 }
 
-char    *ft_substr(char *s, int start, int len)
+char	*ft_substr(char *s, int start, int len)
 {
-    char    *c;
-    int  i;
-    int  y;
+	char	*c;
+	int		i;
+	int		y;
 
-    i = 0;
-    y = ft_strlen(s);
+	i = 0;
+	y = ft_strlen(s);
 	if (len == 0)
 		return (0);
-    if (len > y - start)
-        len = y - start;
-    c = malloc (sizeof(char) * (len + 1));
-    if (!c)
-        return (0);
-    if (start > y)
-    {
-        c[i] = '\0';
-        return (c);
-    }
-    while (s[start] && i < len)
-    {
-        c[i] = s[start];
-        start++;
-        i++;
-    }
-    c[i] = '\0';
-	
-    return (c);
+	if (len > y - start)
+		len = y - start;
+	c = malloc(sizeof(char) * (len + 1));
+	if (!c)
+		return (0);
+	if (start > y)
+	{
+		c[i] = '\0';
+		return (c);
+	}
+	while (s[start] && i < len)
+	{
+		c[i] = s[start];
+		start++;
+		i++;
+	}
+	c[i] = '\0';
+	return (c);
 }
 
 char	**ft_split(char *s, char c)
@@ -62,11 +73,11 @@ char	**ft_split(char *s, char c)
 	l = -1;
 	if (!s)
 		return (NULL);
-	p = malloc(sizeof (char *) * (count_words((char *)s, c) + 1));
+	p = malloc(sizeof(char *) * (count_words((char *)s, c) + 1));
 	if (!p)
 		return (NULL);
 	while (++l < count_words((char *)s, c))
-	{	
+	{
 		while (s[i] && s[i] == c)
 			i++;
 		j = i;
@@ -86,19 +97,16 @@ t_commandes	*ft_lstnew(void *content)
 	first = malloc(sizeof(t_commandes));
 	if (!first)
 		return (0);
-	first->s = content;
+	first->commande = ft_split(content, ' ');
+	// first->files = content;
 	first->next = NULL;
 	return (first);
 }
 
 t_commandes	*ft_lstlast(t_commandes *lst)
 {
-	while (lst != NULL)
-	{
-		if (lst->next == NULL)
-			return (lst);
+	while (lst != NULL && lst->next != NULL)
 		lst = lst->next;
-	}
 	return (lst);
 }
 

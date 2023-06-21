@@ -1,4 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parssing.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/18 15:58:57 by iszitoun          #+#    #+#             */
+/*   Updated: 2023/06/21 15:16:18 by iszitoun         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
+
+char	ft_isredi(char c)
+{
+	return (c == '9' || c == '8' || c == '6' || c == '5');
+}
 
 int	ft_isspecial(char c)
 {
@@ -27,8 +44,6 @@ char	*toknz_list(char *str)
 			array[j] = '8';
 			i++;
 		}
-		// else if (str[i] == '$')
-		// 	array[j] = '7';
 		else if (str[i] == '|')
 			array[j] = '6';
 		else if (str[i] == '>')
@@ -74,7 +89,7 @@ char	*toknz_list(char *str)
 // 	return (count);
 // }
 
-/**/ int count_ptr(char *list)
+/*count_strings_in_commandes*/ int count_ptr(char *list)
 {
 	int	i;
 	int	count;
@@ -83,7 +98,7 @@ char	*toknz_list(char *str)
 	count = 0;
 	while (list[i] && list[i] == '2')
 		i++;
-	while (list[i])
+	while (list[i] && i + 1 < ft_strlen(list))
 	{
 		if (list[i] == '3')
 		{
@@ -95,6 +110,26 @@ char	*toknz_list(char *str)
 			count++;
 		else if (list[i] >= 52)
 			return (count);
+		i++;
+	}
+	return (count);
+}
+
+/*count_redirections*/	int	count_redi(char *list)
+{
+	int	i;
+	int	count;
+
+	i = 0;
+	count = 0;
+	while (list[i] && list[i] == '2')
+		i++;
+	while (list[i])
+	{
+		if (list[i] >= 52 && list[i] != '6')
+			count++;
+		else if (list[i] == '6')
+			return(count);
 		i++;
 	}
 	return (count);
@@ -132,12 +167,11 @@ int	count_pipe(char *list)
 // 	}
 // }
 
-char	**return_it(char *list, char *str, int bool)
+char	**return_commande(char *list, char *str, int bool)
 {
 	char		**commande;
 	static int	i;
 	int			x;
-	int			start1;
 	int			lock;
 	int			lock1;
 	int			tmp;
@@ -149,16 +183,15 @@ char	**return_it(char *list, char *str, int bool)
 	lock1 = 1;
 	tmp = 0;
 	start = 0;
-	start1 = 0;
 	end = 0;
-	commande = malloc(sizeof(char *) * count_ptr(list) + 1);
+	commande = calloc(sizeof(char *) , count_ptr(list) + 2);
 	if (bool == 1)
 		i = 0;
 	if (list[i] == '6')
 		i++;
 	while (list[i] == '2')
 		i++;
-	while (list[i] && list[i] != '6')
+	while (list[i] && list[i] < 52)
 	{
 		if (list[i] == '3')
 		{
@@ -167,14 +200,25 @@ char	**return_it(char *list, char *str, int bool)
 			start = i + 1;
 			x++;
 		}
+		if (list[i] == '5')
+		{
+			while (list[i] != '2' && list[i])
+				i++;
+			end = i;
+			commande[x] = ft_substr(str, start, end - start + 1);
+		}
 		if (((list[i] != tmp) || !list[i + 1]))
 		{
 			end = i - 1;
 			if (!list[i + 1])
 				end = i;
-			start1 = i;
 			lock1 = 0;
 			lock = 1;
+			if (list[i + 1] == '6')
+			{
+				end = i - 1;
+				lock = 0;
+			}
 		}
 		if ((ft_isspecial(list[i]) || list[i] == '1') && list[i] != '3' && lock
 			&& list[i + 1])
@@ -184,7 +228,7 @@ char	**return_it(char *list, char *str, int bool)
 			lock1 = 1;
 			tmp = list[i];
 		}
-		if (list[i] == '1' && list[i - 1] == '2' && !list[i + 1])
+		if (i != 0 && i + 1 < ft_strlen(list) && list[i] == '1' && list[i - 1] == '2' && !list[i + 1])
 		{
 			commande[x] = &str[i];
 			x++;
@@ -205,8 +249,45 @@ char	**return_it(char *list, char *str, int bool)
 		}
 		i++;
 	}
-	commande[x] = NULL;
 	return (commande);
+}
+
+char	**return_file(char *list, char *str, int bool)
+{
+	char		**files;
+	static int	i;
+	int			x;
+	int			j;
+	int			start;
+	int			end;
+
+	files = malloc(sizeof(char *) * 100);
+	x = 0;
+	j = 0;
+	start = 0;
+	end = 0;
+	if (bool == 1)
+		i = 0;
+	if (list[i] == '6')
+		i++;
+	while (list[i] == '2')
+		i++;
+	while (list[i] && list[i] != '6')
+	{
+		if (ft_isredi(list[i]))
+		{
+			start = i;
+			while (list[i] != '2' && list[i])
+				i++;
+			if (i > start)
+				end = i;
+			files[x] = ft_substr(str, start, end - start + 1);
+			x++;
+		}
+		i++;
+	}
+	// files[x] = NULL;
+	return (files);
 }
 
 int	find_quotes_pair(char *tokenz, int i)
@@ -357,17 +438,17 @@ int	env_len(t_commandes *m)
 	i = 0;
 	j = 0;
 	count = 0;
-	while (m->s[i])
+	while (m->commande[i])
 	{
-		if (m->s[i][j] == '$')
+		if (m->commande[i][j] == '$')
 		{
 			j++;
-			while (m->s[i][j] && m->s[i][j] != ' ')
+			while (m->commande[i][j] && m->commande[i][j] != ' ')
 			{
 				count++;
 				j++;
 			}
-			if (m->s[i][j] == ' ' || !m->s[i][j])
+			if (m->commande[i][j] == ' ' || !m->commande[i][j])
 				return (count);
 		}
 		i++;
@@ -383,9 +464,9 @@ char	*fill_var(t_env *s, t_commandes *m, int i, int j)
 	var = malloc(sizeof(char) * s->env_len + 1);
 	x = 0;
 	j++;
-	while (m->s[i][j] && m->s[i][j] != ' ')
+	while (m->commande[i][j] && m->commande[i][j] != ' ')
 	{
-		var[x] = m->s[i][j];
+		var[x] = m->commande[i][j];
 		j++;
 		x++;
 	}

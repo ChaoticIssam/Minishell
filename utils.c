@@ -6,7 +6,7 @@
 /*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/08 22:58:59 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/12 00:43:05 by iszitoun         ###   ########.fr       */
+/*   Updated: 2023/06/18 16:04:09 by iszitoun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ int	ft_strncmp(char *s1, char *s2)
 
 int	ft_strlen(char *str)
 {
-	int	i = 0;
+	int	i;
+
+	i = 0;
 	if (!str)
 		return (0);
 	while (str[i])
@@ -41,32 +43,32 @@ void	ft_putstr(char *str)
 	printf("%s", str);
 }
 
-char    *ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
-    char    *x;
-    int i;
-    int j;
-    int s1_len;
-    int s2_len;
+	char	*x;
+	int		i;
+	int		j;
+	int		s1_len;
+	int		s2_len;
 
-    j = 0;
-    i = 0;
-    s1_len = ft_strlen(s1);
-    s2_len = ft_strlen(s2);
-    x = malloc(sizeof(char) * (s1_len + s2_len + 1));
-    if (!x)
-        return (0);
-    while (s1[i])
-    {
-        x[i] = s1[i];
-        i++;
-    }
-    while (s2[j])
-    {
-        x[i] = s2[j];
-        i++;
-        j++;
-    }
-    x[i] = '\0';
-    return (x);
+	j = 0;
+	i = 0;
+	s1_len = ft_strlen(s1);
+	s2_len = ft_strlen(s2);
+	x = malloc(sizeof(char) * (s1_len + s2_len + 1));
+	if (!x)
+		return (0);
+	while (s1[i])
+	{
+		x[i] = s1[i];
+		i++;
+	}
+	while (s2[j])
+	{
+		x[i] = s2[j];
+		i++;
+		j++;
+	}
+	x[i] = '\0';
+	return (x);
 }

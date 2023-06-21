@@ -1,7 +1,7 @@
 NAME = Minishell
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Werror -Wextra #-fsanitize=address
+CFLAGS = -Wall -Werror -Wextra
 src = main.c\
 		utils.c\
 		parssing.c\

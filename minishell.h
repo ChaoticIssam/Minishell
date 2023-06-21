@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/18 15:58:49 by iszitoun          #+#    #+#             */
+/*   Updated: 2023/06/19 22:39:56 by iszitoun         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -14,9 +26,8 @@ typedef struct s_node
 
 typedef struct s_commandes
 {
-	char				**s;
-	// char				**commande;
-	// char				**files;
+	char				**commande;
+	char				**files;
 	struct s_commandes	*next;
 }						t_commandes;
 
@@ -34,11 +45,12 @@ t_node					*create_node(int arg);
 // t_node				*create_ll(char *str);
 char					*toknz_list(char *str);
 int						count_ptr(char *list);
+int						count_redi(char *list);
 int						count_pipe(char *list);
 t_commandes				*ft_lstnew(void *content);
 t_commandes				*ft_lstlast(t_commandes *lst);
 void					ft_lstadd_back(t_commandes **lst, t_commandes *new);
-char					**return_it(char *list, char *str, int bool);
+char					**return_commande(char *list, char *str, int bool);
 char					*ft_substr(char *s, int start, int len);
 char					**ft_split(char *str, char c);
 int						ft_isspecial(char c);
@@ -61,7 +73,6 @@ char					*get_path(char **env, int i);
 char					*fill_path(char **env, t_env *s);
 char					*var_gett(char **env, int i);
 int						num_of_q(char *list, int start);
-/* tmp */ void print_stuff(int *start);
-/*tmp*/ void print_stuff2(t_commandes *start);
+char					**return_file(char *list, char *str, int bool);
 
 #endif
