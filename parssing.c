@@ -6,7 +6,7 @@
 /*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:57 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/21 15:16:18 by iszitoun         ###   ########.fr       */
+/*   Updated: 2023/06/22 20:53:41 by iszitoun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,24 +98,27 @@ char	*toknz_list(char *str)
 	count = 0;
 	while (list[i] && list[i] == '2')
 		i++;
-	while (list[i] && i + 1 < ft_strlen(list))
+	while (list[i] && i + 1 <= ft_strlen(list))
 	{
 		if (list[i] == '3')
 		{
-			i = find_quotes_pair(list, i + 1) + 1;
+			i = sec_q_rex(list, sec_q(list)) + 1;
 			count++;
 		}
-		if (list[i] == '1' && (list[i + 1] == '2' || !list[i + 1] || list[i
-				+ 1] >= 52))
+		if (list[i] == '1' && (list[i + 1] == '2' || !list[i + 1])
+			&& list[i] != '6')
 			count++;
 		else if (list[i] >= 52)
+		{
+			count++;
 			return (count);
+		}
 		i++;
 	}
 	return (count);
 }
 
-/*count_redirections*/	int	count_redi(char *list)
+/*count_redirections*/ int count_redi(char *list)
 {
 	int	i;
 	int	count;
@@ -129,7 +132,7 @@ char	*toknz_list(char *str)
 		if (list[i] >= 52 && list[i] != '6')
 			count++;
 		else if (list[i] == '6')
-			return(count);
+			return (count);
 		i++;
 	}
 	return (count);
@@ -151,22 +154,6 @@ int	count_pipe(char *list)
 	return (count);
 }
 
-// /**/char **return_commandes(char *list, char *line)
-// {
-// 	char	**commande;
-// 	int		i;
-// 	int		j;
-
-// 	i = 0;
-// 	j = 0;
-// 	while (list[i] && list[i] == '2')
-// 		i++;
-// 	while (list[i] && list[i] != '6')
-// 	{
-
-// 	}
-// }
-
 char	**return_commande(char *list, char *str, int bool)
 {
 	char		**commande;
@@ -184,7 +171,8 @@ char	**return_commande(char *list, char *str, int bool)
 	tmp = 0;
 	start = 0;
 	end = 0;
-	commande = calloc(sizeof(char *) , count_ptr(list) + 2);
+	commande = calloc(sizeof(char *), count_ptr(list) + 2);
+	printf(" ->%d\n", count_ptr(list));
 	if (bool == 1)
 		i = 0;
 	if (list[i] == '6')
@@ -200,14 +188,7 @@ char	**return_commande(char *list, char *str, int bool)
 			start = i + 1;
 			x++;
 		}
-		if (list[i] == '5')
-		{
-			while (list[i] != '2' && list[i])
-				i++;
-			end = i;
-			commande[x] = ft_substr(str, start, end - start + 1);
-		}
-		if (((list[i] != tmp) || !list[i + 1]))
+		if (((list[i] != tmp) || list[i + 1] == '6' || !list[i + 1]))
 		{
 			end = i - 1;
 			if (!list[i + 1])
@@ -216,19 +197,19 @@ char	**return_commande(char *list, char *str, int bool)
 			lock = 1;
 			if (list[i + 1] == '6')
 			{
-				end = i - 1;
+				end = i;
 				lock = 0;
 			}
 		}
-		if ((ft_isspecial(list[i]) || list[i] == '1') && list[i] != '3' && lock
-			&& list[i + 1])
+		if ((list[i] == '1') && list[i] != '3' && lock && list[i + 1])
 		{
 			start = i;
 			lock = 0;
 			lock1 = 1;
 			tmp = list[i];
 		}
-		if (i != 0 && i + 1 < ft_strlen(list) && list[i] == '1' && list[i - 1] == '2' && !list[i + 1])
+		if (i != 0 && i + 1 < ft_strlen(list) && list[i] == '1' && list[i
+			- 1] == '2' && !list[i + 1])
 		{
 			commande[x] = &str[i];
 			x++;
@@ -286,7 +267,6 @@ char	**return_file(char *list, char *str, int bool)
 		}
 		i++;
 	}
-	// files[x] = NULL;
 	return (files);
 }
 
@@ -357,7 +337,7 @@ int	sec_q_rex(char *tknz, int end)
 	{
 		while (tknz[end])
 		{
-			if (tknz[end + 1] == '2')
+			if (tknz[end + 1] == '2' || tknz[end + 1] == '6')
 				return (end);
 			end++;
 		}
@@ -419,6 +399,11 @@ char	*quotes_quotes(char *str, char *tknz, int start)
 			ptr[j] = '\0';
 			return (ptr);
 		}
+	}
+	if ((tknz[i] == '6' && i > sec_q_rex(tknz, sec_q(tknz))))
+	{
+		ptr[j] = '\0';
+		return (ptr);
 	}
 	if (i == sec_q_rex(tknz, sec_q(tknz) + 2) && sec_q_rex(tknz, sec_q(tknz))
 		+ 1 > 0)

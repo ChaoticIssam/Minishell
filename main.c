@@ -6,7 +6,7 @@
 /*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:37 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/21 14:59:17 by iszitoun         ###   ########.fr       */
+/*   Updated: 2023/06/22 16:21:42 by iszitoun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	main(int ac, char **av, char **env)
 		/*print ptrs*/
 		while (x < count_redi(list))
 		{
-			ft_putstr(m->files[x]);
+			ft_putstr(tmp->files[x]);
 			printf("\n");
 			x++;
 		}
