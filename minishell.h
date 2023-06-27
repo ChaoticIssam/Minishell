@@ -6,7 +6,7 @@
 /*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:49 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/27 09:57:28 by deimos           ###   ########.fr       */
+/*   Updated: 2023/06/27 16:07:12 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int						ft_strlen(char *str);
 t_node					*create_node(int arg);
 // t_node				*create_ll(char *str);
 char					*toknz_list(char *str);
-int						count_ptr(char *list);
+int						count_ptr(char *list, int bool);
 int						count_redi(char *list);
 int						count_pipe(char *list);
 t_commandes				*ft_lstnew(void *content);

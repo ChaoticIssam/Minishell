@@ -6,7 +6,7 @@
 /*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:57 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/27 10:04:28 by deimos           ###   ########.fr       */
+/*   Updated: 2023/06/27 16:17:47 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,12 +137,16 @@ char	*toknz_list(char *str)
 // 	return (count);
 // }
 
-/*count_strings_in_commandes*/ int count_ptr(char *list)
+/*count_strings_in_commandes*/ int count_ptr(char *list, int bool)
 {
-	int	i;
 	int	count;
+	static int	i;
+	static int	j;
 
-	i = 0;
+	if (bool == 1)
+		i = 0;
+	if (bool == 0)
+		i = j;
 	count = 0;
 	while (list[i] && list[i] == '2')
 		i++;
@@ -162,7 +166,12 @@ char	*toknz_list(char *str)
 			&& list[i] != '6')
 			count++;
 		else if (list[i] >= 52)
+		{
+			i++;
+			if (bool == 1)
+				j = i;
 			return (count);
+		}
 		i++;
 	}
 	return (count);
@@ -242,9 +251,8 @@ char	**return_commande(char *list, char *str, int bool)
 	end = 0;
 	if (bool == 1)
 		i = 0;
-	ptr_num = count_ptr(list);
+	ptr_num = count_ptr(list, bool);
 	commande = calloc(sizeof(char *), ptr_num + 2);
-	printf("count ->%d and i ->%d\n", ptr_num, i);
 	if (list[i] == '6')
 		i++;
 	while (list[i] == '2')
@@ -258,7 +266,6 @@ char	**return_commande(char *list, char *str, int bool)
 				i = sec_q_rex(list, sec_q(list)) + 1;
 			else if (list[i] == '0')
 				i = sec_q_rex(list, sec_s_q(list)) + 1;
-			printf("i ->%d\n", i);
 			start = i + 1;
 			x++;
 		}
@@ -272,7 +279,6 @@ char	**return_commande(char *list, char *str, int bool)
 			if (list[i + 1] == '6')
 			{
 				end = i - 1;
-				printf("end ->%d\n", end);
 				lock = 0;
 			}
 		}
@@ -293,7 +299,6 @@ char	**return_commande(char *list, char *str, int bool)
 			&& end >= start)
 		{
 			commande[x] = ft_substr(str, start, end - start + 1);
-			printf("i->%d, commande[x]->%s\n", i, commande[x]);
 			x++;
 		}
 		if (list[i] == '2' && list[i + 1] == '2')

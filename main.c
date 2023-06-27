@@ -6,7 +6,7 @@
 /*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:37 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/25 19:15:32 by deimos           ###   ########.fr       */
+/*   Updated: 2023/06/27 16:17:28 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	main(int ac, char **av, char **env)
 			printf("\n");
 			x++;
 		}
-		while (j < count_ptr(list))
+		while (j < count_ptr(list, 1))
 		{
 			ft_putstr(tmp->commande[j]);
 			printf("\n");
@@ -106,10 +106,10 @@ int	main(int ac, char **av, char **env)
 				printf("\n");
 				x++;
 			}
-			while (j < count_ptr(list))
+			while (j < count_ptr(list, 0))
 			{
 				ft_putstr(tmp->commande[j]);
-				printf("<-------\n");
+				printf("<----\n");
 				j++;
 			}
 			/*done printing*/
