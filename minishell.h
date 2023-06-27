@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
+/*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:49 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/19 22:39:56 by iszitoun         ###   ########.fr       */
+/*   Updated: 2023/06/27 09:57:28 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char					**ft_split(char *str, char c);
 int						ft_isspecial(char c);
 int						get_index(int *list);
 char					*in_quotes(char *tokenz, char *str, int i);
-int						find_quotes_pair(char *tokenz, int i);
+int						find_quotes_pair(char *str, char c);
 int						*return_string(t_node *list, char *str);
 char					*ft_strjoin(char *s1, char *s2);
 void					ft_putstr(char *str);
@@ -74,5 +74,10 @@ char					*fill_path(char **env, t_env *s);
 char					*var_gett(char **env, int i);
 int						num_of_q(char *list, int start);
 char					**return_file(char *list, char *str, int bool);
+int						num_of_s_q(char *list, int start);
+int						sec_s_q(char *tknz);
+int						lerreurat(int error);
+int	check_pipe(char *list);
+
 
 #endif

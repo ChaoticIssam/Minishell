@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
+/*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:37 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/22 16:21:42 by iszitoun         ###   ########.fr       */
+/*   Updated: 2023/06/25 19:15:32 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ int	main(int ac, char **av, char **env)
 {
 	char		*line;
 	char		*list;
-	char		**commande;
 	t_commandes	*m;
 	t_commandes	*tmp;
 	t_env		*senv;
@@ -54,7 +53,6 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)**av;
-	commande = NULL;
 	i = 0;
 	j = 0;
 	x = 0;
@@ -72,6 +70,7 @@ int	main(int ac, char **av, char **env)
 		if (line == NULL || !ft_strncmp(line, "exit"))
 			exit(0);
 		list = toknz_list(line);
+		printf("%s\n", list);
 		m->commande = return_commande(list, line, 1);
 		// m->files = return_file(list, line, 1);
 		m->next = NULL;
@@ -110,7 +109,7 @@ int	main(int ac, char **av, char **env)
 			while (j < count_ptr(list))
 			{
 				ft_putstr(tmp->commande[j]);
-				printf("\n");
+				printf("<-------\n");
 				j++;
 			}
 			/*done printing*/

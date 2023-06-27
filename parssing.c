@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parssing.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iszitoun <iszitoun@student.42.fr>          +#+  +:+       +#+        */
+/*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:57 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/22 20:53:41 by iszitoun         ###   ########.fr       */
+/*   Updated: 2023/06/27 10:04:28 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,56 @@ char	*toknz_list(char *str)
 			array[j] = '5';
 		else if (str[i] == '<')
 			array[j] = '4';
-		else if (str[i] == '"' || str[i] == '\'')
+		else if (str[i] == '"')
+		{
 			array[j] = '3';
+			i++;
+			j++;
+			while (i < find_quotes_pair(str, '"'))
+			{
+				if (str[i] == '"')
+				{
+					array[j] = '3';
+					j++;
+					i++;
+				}
+				else
+				{
+					array[j] = '1';
+					j++;
+					i++;
+				}
+			}
+			if (str[i] == '"')
+				array[j] = '3';
+			else
+				lerreurat(3);
+		}
+		else if (str[i] == '\'')
+		{
+			array[j] = '0';
+			i++;
+			j++;
+			while (i < find_quotes_pair(str, '\''))
+			{
+				if (str[i] == '\'')
+				{
+					array[j] = '0';
+					j++;
+					i++;
+				}
+				else
+				{
+					array[j] = '1';
+					j++;
+					i++;
+				}
+			}
+			if (str[i] == '\'')
+				array[j] = '0';
+			else
+				lerreurat(0);
+		}
 		else if (str[i] == ' ' || str[i] == '\t' || str[i] == '\v')
 			array[j] = '2';
 		else
@@ -105,14 +153,16 @@ char	*toknz_list(char *str)
 			i = sec_q_rex(list, sec_q(list)) + 1;
 			count++;
 		}
+		if (list[i] == '0')
+		{
+			i = sec_q_rex(list, sec_s_q(list)) + 1;
+			count++;
+		}
 		if (list[i] == '1' && (list[i + 1] == '2' || !list[i + 1])
 			&& list[i] != '6')
 			count++;
 		else if (list[i] >= 52)
-		{
-			count++;
 			return (count);
-		}
 		i++;
 	}
 	return (count);
@@ -145,6 +195,7 @@ int	count_pipe(char *list)
 
 	i = 0;
 	count = 0;
+	check_pipe(list);
 	while (list[i])
 	{
 		if (list[i] == '6')
@@ -152,6 +203,23 @@ int	count_pipe(char *list)
 		i++;
 	}
 	return (count);
+}
+
+int	check_pipe(char *list)
+{
+	int	i;
+	
+	i = ft_strlen(list) -1;
+	if (i >= 0)
+	{
+		if (list[i] == '6')
+			lerreurat(6);
+		while (list[i] == '2')
+			i--;
+		if (list[i] == '6')
+			lerreurat(6);
+	}
+	return (1);
 }
 
 char	**return_commande(char *list, char *str, int bool)
@@ -164,6 +232,7 @@ char	**return_commande(char *list, char *str, int bool)
 	int			tmp;
 	int			start;
 	int			end;
+	int			ptr_num;
 
 	x = 0;
 	lock = 0;
@@ -171,20 +240,25 @@ char	**return_commande(char *list, char *str, int bool)
 	tmp = 0;
 	start = 0;
 	end = 0;
-	commande = calloc(sizeof(char *), count_ptr(list) + 2);
-	printf(" ->%d\n", count_ptr(list));
 	if (bool == 1)
 		i = 0;
+	ptr_num = count_ptr(list);
+	commande = calloc(sizeof(char *), ptr_num + 2);
+	printf("count ->%d and i ->%d\n", ptr_num, i);
 	if (list[i] == '6')
 		i++;
 	while (list[i] == '2')
 		i++;
 	while (list[i] && list[i] < 52)
 	{
-		if (list[i] == '3')
+		if (list[i] == '3' || list[i] == '0')
 		{
 			commande[x] = quotes_quotes(str, list, i);
-			i = sec_q_rex(list, sec_q(list));
+			if (list[i] == '3')
+				i = sec_q_rex(list, sec_q(list)) + 1;
+			else if (list[i] == '0')
+				i = sec_q_rex(list, sec_s_q(list)) + 1;
+			printf("i ->%d\n", i);
 			start = i + 1;
 			x++;
 		}
@@ -197,7 +271,8 @@ char	**return_commande(char *list, char *str, int bool)
 			lock = 1;
 			if (list[i + 1] == '6')
 			{
-				end = i;
+				end = i - 1;
+				printf("end ->%d\n", end);
 				lock = 0;
 			}
 		}
@@ -218,6 +293,7 @@ char	**return_commande(char *list, char *str, int bool)
 			&& end >= start)
 		{
 			commande[x] = ft_substr(str, start, end - start + 1);
+			printf("i->%d, commande[x]->%s\n", i, commande[x]);
 			x++;
 		}
 		if (list[i] == '2' && list[i + 1] == '2')
@@ -238,13 +314,11 @@ char	**return_file(char *list, char *str, int bool)
 	char		**files;
 	static int	i;
 	int			x;
-	int			j;
 	int			start;
 	int			end;
 
 	files = malloc(sizeof(char *) * 100);
 	x = 0;
-	j = 0;
 	start = 0;
 	end = 0;
 	if (bool == 1)
@@ -270,52 +344,53 @@ char	**return_file(char *list, char *str, int bool)
 	return (files);
 }
 
-int	find_quotes_pair(char *tokenz, int i)
+int	find_quotes_pair(char *str , char c)
 {
-	while (tokenz[i])
+	int	i = ft_strlen(str);
+	while (i >= 0)
 	{
-		if (tokenz[i] == '3' || tokenz[i + 1] == 0)
+		if (str[i] == c)
 			return (i);
-		i++;
+		i--;
 	}
 	return (0);
 }
 
-char	*in_quotes(char *tokenz, char *str, int i)
-{
-	char	*ptr;
-	int		len;
-	int		j;
+// char	*in_quotes(char *tokenz, char *str, int i)
+// {
+// 	char	*ptr;
+// 	int		len;
+// 	int		j;
 
-	j = 0;
-	if (!tokenz || !str)
-		return (0);
-	if (find_quotes_pair(tokenz, i))
-	{
-		len = find_quotes_pair(tokenz, find_quotes_pair(tokenz, i + 1));
-		ptr = malloc(sizeof(char) * len);
-	}
-	else
-		return (0);
-	++i;
-	while (tokenz[i] != '2' || tokenz[i])
-	{
-		if (tokenz[i] == '3' && tokenz[i + 1] == '1')
-		{
-			i++;
-			ptr[j] = str[i];
-		}
-		else if (tokenz[i] == '3' || (tokenz[i] == '3' && !tokenz[i + 1]))
-		{
-			ptr[j] = '\0';
-			break ;
-		}
-		ptr[j] = str[i];
-		j++;
-		i++;
-	}
-	return (ptr);
-}
+// 	j = 0;
+// 	if (!tokenz || !str)
+// 		return (0);
+// 	if (find_quotes_pair(tokenz, i))
+// 	{
+// 		len = find_quotes_pair(tokenz, find_quotes_pair(tokenz, i + 1));
+// 		ptr = malloc(sizeof(char) * len);
+// 	}
+// 	else
+// 		return (0);
+// 	++i;
+// 	while (tokenz[i] != '2' || tokenz[i])
+// 	{
+// 		if (tokenz[i] == '3' && tokenz[i + 1] == '1')
+// 		{
+// 			i++;
+// 			ptr[j] = str[i];
+// 		}
+// 		else if (tokenz[i] == '3' || (tokenz[i] == '3' && !tokenz[i + 1]))
+// 		{
+// 			ptr[j] = '\0';
+// 			break ;
+// 		}
+// 		ptr[j] = str[i];
+// 		j++;
+// 		i++;
+// 	}
+// 	return (ptr);
+// }
 
 int	sec_q(char *tknz)
 {
@@ -328,7 +403,21 @@ int	sec_q(char *tknz)
 			return (i);
 		i--;
 	}
-	return (0);
+	return(lerreurat(0));
+}
+
+int	sec_s_q(char *tknz)
+{
+	int	i;
+
+	i = ft_strlen(tknz) - 1;
+	while (i >= 0)
+	{
+		if (tknz[i] == '0')
+			return (i);
+		i--;
+	}
+	return(lerreurat(0));
 }
 
 int	sec_q_rex(char *tknz, int end)
@@ -359,13 +448,27 @@ int	frst_q(char *tknz)
 	return (0);
 }
 
+int	frst_s_q(char *tknz)
+{
+	int i;
+
+	i = 0;
+	while (tknz[i])
+	{
+		if (tknz[i] == '0')
+			return (i);
+		i++;
+	}
+	return (0);
+}
+
 int	frst_q_rex(char *tknz, int start)
 {
 	if (tknz[start - 1] == '1')
 	{
 		while (start >= 0)
 		{
-			if (tknz[start - 1] == '2')
+			if (tknz[start - 1] == '2' || start == 0)
 				return (start);
 			start--;
 		}
@@ -377,24 +480,42 @@ char	*quotes_quotes(char *str, char *tknz, int start)
 {
 	int		i;
 	int		j;
+	int		last;
+	int		quote_type;
 	char	*ptr;
 	int		numoq;
-
+	
+	i = 0;
+	last = 0;
+	numoq = 0;
 	ptr = malloc(sizeof(char) * 100);
-	i = frst_q_rex(tknz, frst_q(tknz));
-	numoq = num_of_q(tknz, start);
-	j = 0;
-	while (i < sec_q_rex(tknz, sec_q(tknz)) + 1 && numoq % 2 == 0)
+	if (tknz[start] == '3')
 	{
-		if (tknz[i] == '3')
+		quote_type = tknz[start];
+		i = frst_q_rex(tknz, frst_q(tknz));
+		last = sec_q_rex(tknz, sec_q(tknz)) + 1;
+		numoq = num_of_q(tknz, start);
+	}
+	else if (tknz[start] == '0')
+	{
+		quote_type = tknz[start];
+		i = frst_q_rex(tknz, frst_s_q(tknz));
+		last = sec_q_rex(tknz, sec_s_q(tknz)) + 1;
+		numoq = num_of_s_q(tknz, start);
+	}
+	// numoq = num_of_q(tknz, start);
+	j = 0;
+	while (i < last && numoq % 2 == 0)
+	{
+		if (tknz[i] == quote_type)
 			i++;
-		if (tknz[i] == '1' || tknz[i] == '2')
+		if (tknz[i] == '1')
 		{
 			ptr[j] = str[i];
 			i++;
 			j++;
 		}
-		if (!tknz[i])
+		if (!tknz[i] || tknz[i] == '2')
 		{
 			ptr[j] = '\0';
 			return (ptr);
@@ -540,4 +661,33 @@ int	num_of_q(char *list, int start)
 		start++;
 	}
 	return (count);
+}
+
+int	num_of_s_q(char *list, int start)
+{
+	int	count;
+
+	count = 0;
+	while (list[start])
+	{
+		if (list[start] == '0')
+			count++;
+		start++;
+	}
+	return (count);
+}
+
+int	lerreurat(int error)
+{
+	if (error == 3)
+	{
+		printf("ERROR QUOTES\n");
+		exit(0);
+	}
+	if (error == 6)
+	{
+		printf("ERROR PIPE!\n");
+		exit(0);
+	}
+	return (0);
 }
