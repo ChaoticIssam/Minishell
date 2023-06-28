@@ -6,7 +6,7 @@
 /*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:57 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/27 16:17:47 by deimos           ###   ########.fr       */
+/*   Updated: 2023/06/28 18:07:36 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,9 +263,9 @@ char	**return_commande(char *list, char *str, int bool)
 		{
 			commande[x] = quotes_quotes(str, list, i);
 			if (list[i] == '3')
-				i = sec_q_rex(list, sec_q(list)) + 1;
+				i = sec_q_rex(list, sec_q(list));
 			else if (list[i] == '0')
-				i = sec_q_rex(list, sec_s_q(list)) + 1;
+				i = sec_q_rex(list, sec_s_q(list));
 			start = i + 1;
 			x++;
 		}
@@ -486,7 +486,6 @@ char	*quotes_quotes(char *str, char *tknz, int start)
 	int		i;
 	int		j;
 	int		last;
-	int		quote_type;
 	char	*ptr;
 	int		numoq;
 	
@@ -496,23 +495,20 @@ char	*quotes_quotes(char *str, char *tknz, int start)
 	ptr = malloc(sizeof(char) * 100);
 	if (tknz[start] == '3')
 	{
-		quote_type = tknz[start];
 		i = frst_q_rex(tknz, frst_q(tknz));
 		last = sec_q_rex(tknz, sec_q(tknz)) + 1;
 		numoq = num_of_q(tknz, start);
 	}
 	else if (tknz[start] == '0')
 	{
-		quote_type = tknz[start];
 		i = frst_q_rex(tknz, frst_s_q(tknz));
 		last = sec_q_rex(tknz, sec_s_q(tknz)) + 1;
 		numoq = num_of_s_q(tknz, start);
 	}
-	// numoq = num_of_q(tknz, start);
 	j = 0;
 	while (i < last && numoq % 2 == 0)
 	{
-		if (tknz[i] == quote_type)
+		if (tknz[i] == '0' || tknz[i] == '3')
 			i++;
 		if (tknz[i] == '1')
 		{
@@ -549,7 +545,7 @@ int	env_len(t_commandes *m)
 	i = 0;
 	j = 0;
 	count = 0;
-	while (m->commande[i])
+	while (m->commande[i] && m->commande[i][j])
 	{
 		if (m->commande[i][j] == '$')
 		{

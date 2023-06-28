@@ -6,7 +6,7 @@
 /*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:37 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/27 16:17:28 by deimos           ###   ########.fr       */
+/*   Updated: 2023/06/28 17:33:09 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	main(int ac, char **av, char **env)
 		list = toknz_list(line);
 		printf("%s\n", list);
 		m->commande = return_commande(list, line, 1);
-		// m->files = return_file(list, line, 1);
+		m->files = return_file(list, line, 1);
 		m->next = NULL;
 		senv->env_len = env_len(m);
 		check_bill(tmp, senv, env);
@@ -97,7 +97,7 @@ int	main(int ac, char **av, char **env)
 			ft_lstadd_back(&tmp, ft_lstnew(line));
 			tmp = tmp->next;
 			tmp->commande = return_commande(list, line, 0);
-			// tmp->files = return_file(list, line, 0);
+			tmp->files = return_file(list, line, 0);
 			check_bill(tmp, senv, env);
 			/*print ptrs*/
 			while (x < count_redi(list))
@@ -106,7 +106,7 @@ int	main(int ac, char **av, char **env)
 				printf("\n");
 				x++;
 			}
-			while (j < count_ptr(list, 0))
+			while (tmp->commande[j])
 			{
 				ft_putstr(tmp->commande[j]);
 				printf("<----\n");
