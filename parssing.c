@@ -6,15 +6,17 @@
 /*   By: deimos <deimos@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/18 15:58:57 by iszitoun          #+#    #+#             */
-/*   Updated: 2023/06/28 18:07:36 by deimos           ###   ########.fr       */
+/*   Updated: 2023/07/12 22:24:26 by deimos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	ft_isredi(char c)
+int	ft_isredi(char c)
 {
-	return (c == '9' || c == '8' || c == '6' || c == '5');
+	if (c == '9' || c == '8' || c == '4' || c == '5')
+		return(1);
+	return(0);
 }
 
 int	ft_isspecial(char c)
@@ -22,15 +24,53 @@ int	ft_isspecial(char c)
 	return (c == '6' || c == '4' || c == '3');
 }
 
+int	expand_erreur(char *list)
+{
+	int	i;
+
+	i = 0;
+	while (list[i])
+	{
+		if (ft_isredi(list[i]) == 1 && ft_isredi(list[i + 1]) == 1)
+			lerreurat(9);
+		i++;
+	}
+	return (1);
+}
+
+int	quote_bfr_pipe(char *str, int i, char q)
+{
+	int	count;
+	
+	count = 0;
+	while (str[i] != '|' && str[i])
+	{
+		if (str[i] == q)
+			count++;
+		if (count % 2 == 0 && (str[i + 1] == '|' || !str[i + 1]))
+		{
+			while(str[i] && i > 0 && (str[i] == ' ' || str[i] == '\t'))
+				i--;
+			return (i);
+		}
+		i++;
+	}
+	return (0);
+}
+
 char	*toknz_list(char *str)
 {
 	int		i;
 	int		j;
+	int		tmp;
+	int		count;
 	char	*array;
 
 	array = NULL;
 	i = 0;
 	j = 0;
+	tmp = 0;
+	count = 0;
 	array = calloc(sizeof(char), ft_strlen(str) + 1); //**
 	while (str[i])
 	{
@@ -53,52 +93,100 @@ char	*toknz_list(char *str)
 		else if (str[i] == '"')
 		{
 			array[j] = '3';
-			i++;
-			j++;
-			while (i < find_quotes_pair(str, '"'))
+			if (quote_bfr_pipe(str, i, '"'))
 			{
-				if (str[i] == '"')
-				{
-					array[j] = '3';
-					j++;
-					i++;
-				}
-				else
+				tmp = quote_bfr_pipe(str, i, '"');
+				i++;
+				j++;
+				while (i < tmp)
 				{
 					array[j] = '1';
-					j++;
+					if(str[i] == '"' || str[i] == '\'')
+						array[j] = '3';
 					i++;
+					j++;
 				}
+				if (str[i] == '"')
+					array[j] = '3';
+				else
+					array[j] = '1';
+			}	
+			else if (!quote_bfr_pipe(str, i, '"'))
+			{
+				i++;
+				j++;
+				count++;
+				while (i < find_quotes_pair(str, '"'))
+				{
+					if (str[i] == '"')
+					{
+						array[j] = '3';
+						count++;
+						j++;
+						i++;
+					}
+					else if (str[i] == '|' && count % 2 == 0)
+					{
+						array[j] = '6';
+						i++;
+						j++;
+					}
+					else
+					{
+						array[j] = '1';
+						j++;
+						i++;
+					}
+				}
+				if (str[i] == '"')
+					array[j] = '3';
+				else
+					lerreurat(3);
 			}
-			if (str[i] == '"')
-				array[j] = '3';
-			else
-				lerreurat(3);
 		}
 		else if (str[i] == '\'')
 		{
 			array[j] = '0';
-			i++;
-			j++;
-			while (i < find_quotes_pair(str, '\''))
+			if (quote_bfr_pipe(str, i, '\''))
 			{
-				if (str[i] == '\'')
-				{
-					array[j] = '0';
-					j++;
-					i++;
-				}
-				else
+				tmp = quote_bfr_pipe(str, i, '\'');
+				i++;
+				j++;
+				while (i < tmp)
 				{
 					array[j] = '1';
-					j++;
+					if(str[i] == '\'')
+						array[j] = '0';
 					i++;
+					j++;
 				}
+				if (str[i] == '\'')
+					array[j] = '0';
+				else
+					array[j] = '1';
 			}
-			if (str[i] == '\'')
-				array[j] = '0';
-			else
-				lerreurat(0);
+			else if (!quote_bfr_pipe(str, i, '\''))
+			{
+				while (i < find_quotes_pair(str, '\''))
+				{
+					if (str[i] == '\'')
+					{
+						array[j] = '0';
+						j++;
+						i++;
+					}
+					else
+					{
+						array[j] = '1';
+						j++;
+						i++;
+					}
+				}
+				if (str[i] == '\'')
+					array[j] = '0';
+				else
+					lerreurat(0);
+			}
 		}
 		else if (str[i] == ' ' || str[i] == '\t' || str[i] == '\v')
 			array[j] = '2';
@@ -142,15 +230,17 @@ char	*toknz_list(char *str)
 	int	count;
 	static int	i;
 	static int	j;
+	int			len;
 
 	if (bool == 1)
 		i = 0;
 	if (bool == 0)
 		i = j;
 	count = 0;
+	len = ft_strlen(list);
 	while (list[i] && list[i] == '2')
 		i++;
-	while (list[i] && i + 1 <= ft_strlen(list))
+	while (i >= 0 && i + 1 <= len && list[i])
 	{
 		if (list[i] == '3')
 		{
@@ -164,6 +254,8 @@ char	*toknz_list(char *str)
 		}
 		if (list[i] == '1' && (list[i + 1] == '2' || !list[i + 1])
 			&& list[i] != '6')
+			count++;
+		if (list[i] == '1' && list[i + 1] >= 52)
 			count++;
 		else if (list[i] >= 52)
 		{
@@ -235,6 +327,7 @@ char	**return_commande(char *list, char *str, int bool)
 {
 	char		**commande;
 	static int	i;
+	int			j;
 	int			x;
 	int			lock;
 	int			lock1;
@@ -248,37 +341,48 @@ char	**return_commande(char *list, char *str, int bool)
 	lock1 = 1;
 	tmp = 0;
 	start = 0;
+	j = 0;
 	end = 0;
 	if (bool == 1)
 		i = 0;
 	ptr_num = count_ptr(list, bool);
+	printf("---->%d\n", ptr_num);
+	printf("i ->%d\n", i);
 	commande = calloc(sizeof(char *), ptr_num + 2);
-	if (list[i] == '6')
+	expand_erreur(list);
+	if (list[i] == '6' ||)
 		i++;
 	while (list[i] == '2')
 		i++;
-	while (list[i] && list[i] < 52)
+	while (i + 1 <= ft_strlen(list) && list[i] && list[i] < 52)
 	{
 		if (list[i] == '3' || list[i] == '0')
 		{
+			j = i;
 			commande[x] = quotes_quotes(str, list, i);
+			if (quote_bfr_pipe(str, i, list[i]))
+				i = quote_bfr_pipe(str, i, list[i]);
+			else if (!quote_bfr_pipe(str, i, list[i]))
+				i = j;
 			if (list[i] == '3')
-				i = sec_q_rex(list, sec_q(list));
+				i = sec_q_rex(list, i);
 			else if (list[i] == '0')
-				i = sec_q_rex(list, sec_s_q(list));
+				i = sec_q_rex(list, i);
 			start = i + 1;
 			x++;
 		}
 		if (((list[i] != tmp) || list[i + 1] == '6' || !list[i + 1]))
 		{
 			end = i - 1;
-			if (!list[i + 1])
+			if (i + 1 <= ft_strlen(list) && !list[i + 1])
 				end = i;
 			lock1 = 0;
 			lock = 1;
-			if (list[i + 1] == '6')
+			if (i + 1 <= ft_strlen(list) && list[i + 1] == '6')
 			{
-				end = i - 1;
+				end = i;
+				if (list[i] == '2')
+					end = i - 1;
 				lock = 0;
 			}
 		}
@@ -297,7 +401,7 @@ char	**return_commande(char *list, char *str, int bool)
 		}
 		if (!lock1 && list[i] != '3' && str[start] != '"' && str[start] != '\''
 			&& end >= start)
-		{
+		{	
 			commande[x] = ft_substr(str, start, end - start + 1);
 			x++;
 		}
@@ -334,13 +438,16 @@ char	**return_file(char *list, char *str, int bool)
 		i++;
 	while (list[i] && list[i] != '6')
 	{
-		if (ft_isredi(list[i]))
+		if (ft_isredi(list[i]) == 1)
 		{
 			start = i;
+			if (i > 0)
+				start = i + 1;
 			while (list[i] != '2' && list[i])
 				i++;
 			if (i > start)
 				end = i;
+			printf("end ->%d and start ->%d\n", end, start);
 			files[x] = ft_substr(str, start, end - start + 1);
 			x++;
 		}
@@ -495,13 +602,13 @@ char	*quotes_quotes(char *str, char *tknz, int start)
 	ptr = malloc(sizeof(char) * 100);
 	if (tknz[start] == '3')
 	{
-		i = frst_q_rex(tknz, frst_q(tknz));
+		i = frst_q_rex(tknz, start);
 		last = sec_q_rex(tknz, sec_q(tknz)) + 1;
 		numoq = num_of_q(tknz, start);
 	}
 	else if (tknz[start] == '0')
 	{
-		i = frst_q_rex(tknz, frst_s_q(tknz));
+		i = frst_q_rex(tknz, start);
 		last = sec_q_rex(tknz, sec_s_q(tknz)) + 1;
 		numoq = num_of_s_q(tknz, start);
 	}
@@ -516,7 +623,7 @@ char	*quotes_quotes(char *str, char *tknz, int start)
 			i++;
 			j++;
 		}
-		if (!tknz[i] || tknz[i] == '2')
+		if (!tknz[i] || tknz[i] == '2' || tknz[i] == '6')
 		{
 			ptr[j] = '\0';
 			return (ptr);
@@ -682,12 +789,17 @@ int	lerreurat(int error)
 {
 	if (error == 3)
 	{
-		printf("ERROR QUOTES\n");
+		printf("ERROR QUOTES!\n");
 		exit(0);
 	}
 	if (error == 6)
 	{
 		printf("ERROR PIPE!\n");
+		exit(0);
+	}
+	if (error == 9)
+	{
+		printf("ERROR REDIRECTION!\n");
 		exit(0);
 	}
 	return (0);
